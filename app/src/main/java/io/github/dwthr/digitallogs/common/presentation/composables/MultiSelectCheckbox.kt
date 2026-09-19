@@ -1,0 +1,80 @@
+package io.github.dwthr.digitallogs.common.presentation.composables
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun MultiSelectCheckbox(
+	checkboxOptionsWithValue: Map<String, Boolean>,
+	onCheckboxToggle: (String) -> Unit,
+	modifier: Modifier = Modifier,
+	header: @Composable (() -> Unit)? = null,
+	enabled: Boolean = true,
+){
+	Column {
+		header?.invoke()
+		Spacer(Modifier.size(16.dp))
+
+		Column(modifier.selectableGroup()) {
+			checkboxOptionsWithValue.forEach { (checkboxItem, isSelectedValue) ->
+				Row(
+					modifier = Modifier
+						.fillMaxWidth()
+						.height(56.dp)
+						.selectable(
+							selected = isSelectedValue,
+							enabled = enabled,
+							onClick = { onCheckboxToggle(checkboxItem) },
+							role = Role.Checkbox
+						)
+						.padding(horizontal = 16.dp),
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					Checkbox(
+						checked = isSelectedValue,
+						onCheckedChange = null, // null recommended for accessibility with screen readers
+						enabled = enabled
+					)
+					Text(
+						text = checkboxItem,
+						style = MaterialTheme.typography.bodyLarge,
+						color = MaterialTheme.colorScheme.onSurface,
+						modifier = Modifier.padding(start = 16.dp)
+					)
+				}
+			}
+		}
+	}
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewItemTagEditorSheet(){
+	val itemWithValue = mutableMapOf(
+		"Option 1" to false,
+		"Option 2" to false,
+		"Option 3" to false,
+		"Option 4" to false,
+	)
+	MultiSelectCheckbox(
+		checkboxOptionsWithValue = itemWithValue,
+		onCheckboxToggle = { item -> itemWithValue[item] = itemWithValue[item]!!.not() },
+		enabled = true
+	)
+}
